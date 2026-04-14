@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { generateGrid } from './utils/wordSearchGenerator';
 import { getLevelConfig } from './utils/gameLevels';
-import { playBeep } from './utils/audio';
+import { playBeep, playAlertSound, playAnguishSound } from './utils/audio';
 import Grid from './components/Grid';
 import Timer from './components/Timer';
 
@@ -89,13 +89,14 @@ function App() {
 
     // Called on time up or explicit failure
     const handleFailure = () => {
-        playBeep(300, 400); // Low beep failure
         const remaining = lives - 1;
         setLives(remaining);
         
         if (remaining <= 0) {
+            playAnguishSound();
             setGameState('TOTAL_GAMEOVER');
         } else {
+            playAlertSound();
             setGameState('GAMEOVER');
         }
     };
@@ -209,8 +210,12 @@ function App() {
                         <div className="emoji-large">☠️</div>
                         <h2>Salud Agotada</h2>
                         <p>Has perdido las 3 vidas. Como penalidad, retrocederás al nivel anterior.</p>
-                        {/* Decrease level by 1, refill lives to 3 */}
-                        <button className="btn-primary" onClick={() => startGame(Math.max(1, level - 1), 3)}>Aceptar Penalidad</button>
+                        <button className="btn-primary" onClick={() => {
+                            const penaltyLevel = Math.max(1, level - 1);
+                            // Set the max unlocked level to the penalty level so they have to re-unlock
+                            updateMaxLevel(penaltyLevel);
+                            startGame(penaltyLevel, 3);
+                        }}>Aceptar Penalidad</button>
                     </div>
                 </div>
             )}
