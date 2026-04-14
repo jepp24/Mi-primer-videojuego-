@@ -26,14 +26,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Mobile viewport height */
+  /* Use dynamic viewport height to adapt to iOS/Android URL bars */
+  min-height: 100vh; 
+  min-height: 100dvh; 
   overflow: hidden; /* Prevent scrolling when dragging */
+  /* Prevent bounce effect on iOS */
+  overscroll-behavior-y: none;
 }
 
 #root {
   width: 100%;
   max-width: 480px; /* Mobile width */
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -200,6 +205,9 @@ h2 {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 16px;
   position: relative;
+  /* Hardware acceleration for layout */
+  transform: translateZ(0); 
+  will-change: transform;
 }
 
 .cell {
@@ -214,6 +222,8 @@ h2 {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: background 0.1s;
+  /* Hint browser for faster color transitions */
+  will-change: background-color;
 }
 
 .cell.selected {

@@ -14,6 +14,7 @@ function App() {
     const [foundPositions, setFoundPositions] = useState([]);
     const [maxUnlockedLevel, setMaxUnlockedLevel] = useState(1);
     const [gameId, setGameId] = useState(0);
+    const [addSecondsEvent, setAddSecondsEvent] = useState(0);
 
     const TOTAL_LEVELS = 100;
 
@@ -45,6 +46,7 @@ function App() {
         setLives(currentLives);
         setFoundWords([]);
         setFoundPositions([]);
+        setAddSecondsEvent(0);
         setGameId(prev => prev + 1);
         setGameState('PLAYING');
     };
@@ -65,9 +67,12 @@ function App() {
         if (found) {
             setFoundWords([...foundWords, found]);
             setFoundPositions([...foundPositions, ...selection]);
+            setAddSecondsEvent(prev => prev + 1);
+            playBeep(1200, 100); // 🪙 "Ding!" sound effect for word
             
             if (foundWords.length + 1 === config.wordsPlaced.length) {
                 // WON THIS LEVEL
+                playBeep(1500, 300); // 🎉 "Tada!" sound effect for level win
                 if (level === maxUnlockedLevel && level < TOTAL_LEVELS) {
                     updateMaxLevel(level + 1);
                 }
@@ -153,6 +158,7 @@ function App() {
                             initialSeconds={config.timeSeconds} 
                             isRunning={gameState === 'PLAYING'} 
                             onTimeUp={handleTimeUp} 
+                            addSecondsEvent={addSecondsEvent}
                         />
                     </div>
 

@@ -1,12 +1,26 @@
 import { useState, useEffect } from 'react';
 import { playBeep } from '../utils/audio';
 
-export default function Timer({ initialSeconds, onTimeUp, isRunning }) {
+export default function Timer({ initialSeconds, onTimeUp, isRunning, addSecondsEvent }) {
     const [timeLeft, setTimeLeft] = useState(initialSeconds);
 
     useEffect(() => {
         setTimeLeft(initialSeconds);
     }, [initialSeconds]);
+
+    useEffect(() => {
+        if (addSecondsEvent > 0) {
+            setTimeLeft(prev => {
+                let reward = 2; // Recompensa menor al principio
+                if (prev <= 15) {
+                    reward = 5; // Recompensa mayor si queda poco tiempo
+                } else if (prev <= initialSeconds * 0.5) {
+                    reward = 3; // Recompensa media a la mitad del nivel
+                }
+                return prev + reward;
+            });
+        }
+    }, [addSecondsEvent, initialSeconds]);
 
     useEffect(() => {
         let interval = null;

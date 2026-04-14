@@ -1,19 +1,21 @@
 // gameLevels.js
 
-const airlinesDictionary = [
+const allWordsDictionary = [
+    // Aerolineas
     "AVIANCA", "LATAM", "IBERIA", "EMIRATES", "LUFTHANSA",
     "RYANAIR", "EASYJET", "QANTAS", "DELTA", "UNITED",
     "AMERICAN", "AIRFRANCE", "KLM", "QATAR", "COPA",
-    "AEROMEXICO", "VOLARIS", "VIVA", "BRITISH", "JAPAN"
-];
-
-const animalsAndOthersDictionary = [
+    "AEROMEXICO", "VOLARIS", "VIVA", "BRITISH", "JAPAN",
     // Animales
     "TIGRE", "LEON", "ELEFANTE", "JIRAFA", "CANGURO", "PINGUINO",
     "COCODRILO", "MURCIELAGO", "RINOCERONTE", "HIPOPOTAMO", "CHIMPANCE",
-    // Otras tematicas (Espacio, Computacion)
+    "SERPIENTE", "AGUILA", "TORTUGA", "DELFIN", "BALLENA",
+    // Otras tematicas (Espacio, Computacion, Generales)
     "ASTRONAUTA", "PLANETA", "GALAXIA", "METEORITO",
-    "COMPUTADORA", "INTERNET", "PROGRAMA", "TECLADO"
+    "COMPUTADORA", "INTERNET", "PROGRAMA", "TECLADO",
+    "PANTALLA", "SISTEMA", "SOFTWARE", "HARDWARE",
+    "GUITARRA", "PIANO", "BATERIA", "VIOLIN",
+    "ESCUELA", "UNIVERSIDAD", "BIBLIOTECA", "MUSEO"
 ];
 
 function getRandomWords(dictionary, count, lengthMax = 20) {
@@ -23,37 +25,25 @@ function getRandomWords(dictionary, count, lengthMax = 20) {
 }
 
 export function getLevelConfig(levelNumber) {
-    let gridSize = 6;
-    let wordCount = 3;
-    let timeSeconds = 60;
-    let allowDiagonals = false;
-    let allowReverse = false;
-    let words = [];
+    // Calculamos a qué grupo de 10 pertenece el nivel.
+    // Nivel 1-10 -> Grupo 0, Nivel 11-20 -> Grupo 1, etc.
+    const chunkIndex = Math.floor((levelNumber - 1) / 10);
+    
+    // Reglas base que van aumentando según "secciones de 10 en 10"
+    // Empezamos fácil y se va complicando
+    const baseGridSize = 8 + (chunkIndex * 1); // 8, 9, 10, 11... max 18
+    const baseWordCount = 4 + chunkIndex;      // 4, 5, 6, 7... max 14
+    const baseTime = 60 - (chunkIndex * 2);    // 60, 58, 56... min 30
+    
+    const gridSize = Math.min(18, baseGridSize);
+    const wordCount = Math.min(16, baseWordCount);
+    const timeSeconds = Math.max(30, baseTime);
+    
+    // Diagonales e invertidas se activan en grupos más avanzados
+    const allowDiagonals = chunkIndex >= 1; // A partir del nivel 11
+    const allowReverse = chunkIndex >= 2;   // A partir del nivel 21
 
-    if (levelNumber <= 10) {
-        // Airlines Phase
-        if (levelNumber <= 3) {
-            gridSize = 6 + levelNumber; // 7, 8, 9
-            wordCount = 3 + levelNumber; // 4, 5, 6
-            timeSeconds = 60 - (levelNumber * 5); 
-            allowDiagonals = levelNumber >= 2;
-        } else {
-            gridSize = Math.min(14, 9 + Math.floor((levelNumber - 3) / 2));
-            wordCount = 6 + (levelNumber - 3);
-            timeSeconds = Math.max(30, 60 - (levelNumber * 3));
-            allowDiagonals = true;
-            allowReverse = levelNumber >= 5;
-        }
-        words = getRandomWords(airlinesDictionary, wordCount, gridSize);
-    } else {
-        // Advanced Phase (11+)
-        gridSize = 16;
-        wordCount = Math.min(15, 10 + Math.floor((levelNumber - 10) / 2));
-        timeSeconds = 45; // Fixed 45 seconds explicitly as requested
-        allowDiagonals = true;
-        allowReverse = true;
-        words = getRandomWords(animalsAndOthersDictionary, wordCount, 16);
-    }
+    const words = getRandomWords(allWordsDictionary, wordCount, gridSize);
 
     return {
         level: levelNumber,

@@ -6,9 +6,17 @@ export default function Grid({ config, onWordSelect, foundPositions }) {
     const [selection, setSelection] = useState([]);
     const gridRef = useRef(null);
 
-    // Dynamic cell size based on grid size to fit on mobile
+    // Dynamic cell size based on grid size and window width to fit on any mobile
     useEffect(() => {
-        document.documentElement.style.setProperty('--cell-size', `${Math.min(35, 320 / size)}px`);
+        const updateSize = () => {
+            const availableWidth = Math.min(window.innerWidth, 480) - 60; // 480 is max-width, 60 is padding
+            const cellSize = Math.min(45, Math.floor(availableWidth / size));
+            document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+        };
+        
+        updateSize();
+        window.addEventListener('resize', updateSize);
+        return () => window.removeEventListener('resize', updateSize);
     }, [size]);
 
     const handlePointerDown = (r, c) => {
