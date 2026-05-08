@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { generateGrid } from './utils/wordSearchGenerator';
 import { getLevelConfig } from './utils/gameLevels';
-import { playBeep, playAlertSound, playAnguishSound } from './utils/audio';
+import { playBeep, playAlertSound, playAnguishSound, setSoundEnabled } from './utils/audio';
 import Grid from './components/Grid';
 import Timer from './components/Timer';
+import { App as CapacitorApp } from '@capacitor/app';
 
 function App() {
-    const [gameState, setGameState] = useState('MENU'); // MENU, PLAYING, SUCCESS, GAMEOVER, TOTAL_GAMEOVER
+    const [gameState, setGameState] = useState('START_SCREEN'); // START_SCREEN, LEVEL_SELECT, PLAYING, SUCCESS, GAMEOVER, TOTAL_GAMEOVER
     const [level, setLevel] = useState(1);
     const [lives, setLives] = useState(3);
     const [config, setConfig] = useState(null);
@@ -15,20 +16,46 @@ function App() {
     const [maxUnlockedLevel, setMaxUnlockedLevel] = useState(1);
     const [gameId, setGameId] = useState(0);
     const [addSecondsEvent, setAddSecondsEvent] = useState(0);
+    const [menuPage, setMenuPage] = useState(0); 
+    const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+    const [showSettings, setShowSettings] = useState(false);
 
     const TOTAL_LEVELS = 100;
 
-    // Load progress from LocalStorage
+    // Load progress and settings from LocalStorage
     useEffect(() => {
         const savedLevel = localStorage.getItem('sopa_de_letras_max_level');
         if (savedLevel) {
-            setMaxUnlockedLevel(parseInt(savedLevel, 10));
+            const parsed = parseInt(savedLevel, 10);
+            setMaxUnlockedLevel(parsed);
+            setMenuPage(Math.floor((parsed - 1) / 10));
+        }
+
+        const savedSound = localStorage.getItem('sopa_de_letras_sound');
+        if (savedSound !== null) {
+            const enabled = savedSound === 'true';
+            setIsSoundEnabled(enabled);
+            setSoundEnabled(enabled);
         }
     }, []);
+
+    const toggleSound = () => {
+        const newState = !isSoundEnabled;
+        setIsSoundEnabled(newState);
+        setSoundEnabled(newState);
+        localStorage.setItem('sopa_de_letras_sound', newState.toString());
+        if (newState) playBeep(800, 100);
+    };
 
     const updateMaxLevel = (newMax) => {
         setMaxUnlockedLevel(newMax);
         localStorage.setItem('sopa_de_letras_max_level', newMax.toString());
+    };
+
+    const handleResetProgress = () => {
+        if (window.confirm('¿Estás seguro de que quieres reiniciar TODO tu progreso y volver al nivel 1?')) {
+            updateMaxLevel(1);
+        }
     };
 
     const startGame = (lvl, currentLives = 3) => {
@@ -49,6 +76,17 @@ function App() {
         setAddSecondsEvent(0);
         setGameId(prev => prev + 1);
         setGameState('PLAYING');
+    };
+
+    const exitApp = async () => {
+        if (window.confirm('¿Deseas salir del juego?')) {
+            try {
+                await CapacitorApp.exitApp();
+            } catch (e) {
+                console.log('Exiting app (web fallback)...');
+                alert('En un dispositivo móvil, la aplicación se cerraría ahora.');
+            }
+        }
     };
 
     const handleWordSelect = (selection) => {
@@ -112,8 +150,11 @@ function App() {
     };
 
     const renderLevelSelector = () => {
+        const start = menuPage * 10 + 1;
+        const end = Math.min(start + 9, TOTAL_LEVELS);
         const levels = [];
-        for (let i = 1; i <= TOTAL_LEVELS; i++) {
+        
+        for (let i = start; i <= end; i++) {
             const isUnlocked = i <= maxUnlockedLevel;
             levels.push(
                 <button 
@@ -126,18 +167,98 @@ function App() {
                 </button>
             );
         }
-        return <div className="levels-grid">{levels}</div>;
+
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center', width: '100%' }}>
+                <div className="levels-pagination" style={{ display: 'flex', alignItems: 'center', gap: '20px', width: '100%', justifyContent: 'space-between' }}>
+                    <button 
+                        className="btn-icon" 
+                        disabled={menuPage === 0}
+                        onClick={() => setMenuPage(p => p - 1)}
+                        style={{ fontSize: '1.5rem', padding: '5px 15px' }}
+                    >
+                        ◀
+                    </button>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                        Niveles {start} - {end}
+                    </span>
+                    <button 
+                        className="btn-icon" 
+                        disabled={(menuPage + 1) * 10 >= TOTAL_LEVELS}
+                        onClick={() => setMenuPage(p => p + 1)}
+                        style={{ fontSize: '1.5rem', padding: '5px 15px' }}
+                    >
+                        ▶
+                    </button>
+                </div>
+                <div className="levels-grid">{levels}</div>
+            </div>
+        );
     };
 
+// Main App Grid
     return (
         <div className="app-container">
-            {gameState === 'MENU' && (
+            {gameState === 'START_SCREEN' && (
+                <div className="start-screen">
+                    <div className="hero-section">
+                        <h1>Sopa de Letras</h1>
+                        <div className="badge-premium">PREMIUM EDITION</div>
+                    </div>
+                    
+                    <div className="menu-buttons">
+                        <button className="btn-primary main-action" onClick={() => setGameState('LEVEL_SELECT')}>
+                            🎮 JUGAR
+                        </button>
+                        <button className="btn-secondary" onClick={() => setShowSettings(true)}>
+                            ⚙️ CONFIGURACIÓN
+                        </button>
+                        <button className="btn-icon" onClick={exitApp} style={{marginTop: '10px'}}>
+                            🚪 SALIR
+                        </button>
+                    </div>
+
+                    <div className="footer-info">
+                        V 1.0.0 • by Emilio
+                    </div>
+
+                    {showSettings && (
+                        <div className="overlay">
+                            <div className="glass-panel overlay-content">
+                                <h2>Configuración</h2>
+                                <div className="settings-list">
+                                    <div className="setting-item">
+                                        <span>Efectos de Sonido</span>
+                                        <button 
+                                            className={`toggle-btn ${isSoundEnabled ? 'active' : ''}`}
+                                            onClick={toggleSound}
+                                        >
+                                            {isSoundEnabled ? 'ENCENDIDO' : 'APAGADO'}
+                                        </button>
+                                    </div>
+                                    <div className="setting-item" style={{justifyContent: 'center', marginTop: '10px'}}>
+                                        <a href="PRIVACY_POLICY.html" target="_blank" style={{color: 'var(--accent-color)', fontSize: '0.9rem'}}>Política de Privacidad</a>
+                                    </div>
+                                </div>
+                                <button className="btn-primary" onClick={() => setShowSettings(false)}>ACEPTAR</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {gameState === 'LEVEL_SELECT' && (
                 <div className="main-menu">
-                    <h1>Sopa de Letras</h1>
-                    <h2>Premium Edition</h2>
+                    <button className="btn-back" onClick={() => setGameState('START_SCREEN')}>◀ Portada</button>
+                    <h1>Niveles</h1>
                     <p style={{marginBottom: '10px'}}>¡Elige un nivel y juega!</p>
-                    <div className="glass-panel" style={{width: '100%', flex: 1, overflowY: 'auto', padding: '15px'}}>
+                    <div className="glass-panel" style={{width: '100%', flex: 1, minHeight: 0, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px'}}>
                         {renderLevelSelector()}
+                        <div style={{borderTop: '1px solid var(--glass-border)', paddingTop: '20px', marginTop: 'auto'}}>
+                            <button className="btn-secondary" onClick={handleResetProgress}>
+                                🔄 Reiniciar progreso (Nivel 1)
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -145,8 +266,8 @@ function App() {
             {(gameState === 'PLAYING' || gameState === 'SUCCESS' || gameState === 'GAMEOVER' || gameState === 'TOTAL_GAMEOVER') && config && (
                 <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
                     <div className="game-header">
-                        <button className="btn-icon" onClick={() => setGameState('MENU')} title="Volver al Menú">
-                            ◀ Volver
+                        <button className="btn-icon" onClick={() => setGameState('LEVEL_SELECT')} title="Volver al Menú">
+                            ◀ Niveles
                         </button>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center' }}>
                             <div className="level-badge">
@@ -188,7 +309,7 @@ function App() {
                         <h2>¡Nivel Completado!</h2>
                         <p>¡Eres un genio! Prepárate para el siguiente desafío.</p>
                         <button className="btn-primary" onClick={() => startGame(level < TOTAL_LEVELS ? level + 1 : TOTAL_LEVELS, lives)}>Siguiente Nivel</button>
-                        <button className="btn-secondary" onClick={() => setGameState('MENU')}>Ir al Menú</button>
+                        <button className="btn-secondary" onClick={() => setGameState('LEVEL_SELECT')}>Ir a Niveles</button>
                     </div>
                 </div>
             )}

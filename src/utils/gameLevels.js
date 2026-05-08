@@ -12,36 +12,44 @@ const allWordsDictionary = [
     "SERPIENTE", "AGUILA", "TORTUGA", "DELFIN", "BALLENA",
     // Otras tematicas (Espacio, Computacion, Generales)
     "ASTRONAUTA", "PLANETA", "GALAXIA", "METEORITO",
-    "COMPUTADORA", "INTERNET", "PROGRAMA", "TECLADO",
+    "COMPUTADORA",    "INTERNET", "PROGRAMA", "TECLADO",
     "PANTALLA", "SISTEMA", "SOFTWARE", "HARDWARE",
     "GUITARRA", "PIANO", "BATERIA", "VIOLIN",
-    "ESCUELA", "UNIVERSIDAD", "BIBLIOTECA", "MUSEO"
+    "ESCUELA", "UNIVERSIDAD", "BIBLIOTECA", "MUSEO",
+    "ESTRELLA", "COMETA", "ORBITA", "TELESCOPIO",
+    "ALGORITMO", "DATOS", "ARCHIVO", "CARPETA",
+    "CIUDAD", "MONTAÑA", "BOSQUE", "DESIERTO", "OCEANO"
 ];
 
 function getRandomWords(dictionary, count, lengthMax = 20) {
     const validWords = dictionary.filter(w => w.length <= lengthMax);
-    const shuffled = validWords.sort(() => 0.5 - Math.random());
+    const shuffled = [...validWords].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
 }
 
 export function getLevelConfig(levelNumber) {
-    // Calculamos a qué grupo de 10 pertenece el nivel.
-    // Nivel 1-10 -> Grupo 0, Nivel 11-20 -> Grupo 1, etc.
     const chunkIndex = Math.floor((levelNumber - 1) / 10);
     
     // Reglas base que van aumentando según "secciones de 10 en 10"
-    // Empezamos fácil y se va complicando
-    const baseGridSize = 8 + (chunkIndex * 1); // 8, 9, 10, 11... max 18
-    const baseWordCount = 4 + chunkIndex;      // 4, 5, 6, 7... max 14
-    const baseTime = 60 - (chunkIndex * 2);    // 60, 58, 56... min 30
+    let gridSize = 7 + chunkIndex; 
+    let wordCount = 3 + chunkIndex;
+    let timeSeconds = 60 - (chunkIndex * 2);
+
+    // DIFICULTAD EXTREMA PARA NIVELES FINALES (91-100)
+    if (levelNumber > 90) {
+        gridSize = 18 + (levelNumber - 91); // Sube rápido de 18 a 27
+        wordCount = 15 + (levelNumber - 90); // Sube de 16 a 25 palabras
+        timeSeconds = 30 - (levelNumber - 91); // Baja de 30 a 20 segundos (!)
+    }
     
-    const gridSize = Math.min(18, baseGridSize);
-    const wordCount = Math.min(16, baseWordCount);
-    const timeSeconds = Math.max(30, baseTime);
+    // Límites de seguridad para mantener jugabilidad
+    gridSize = Math.max(7, Math.min(25, gridSize));
+    wordCount = Math.max(3, Math.min(25, wordCount));
+    timeSeconds = Math.max(20, timeSeconds);
     
-    // Diagonales e invertidas se activan en grupos más avanzados
-    const allowDiagonals = chunkIndex >= 1; // A partir del nivel 11
-    const allowReverse = chunkIndex >= 2;   // A partir del nivel 21
+    // Diagonales e invertidas se activan a partir del nivel 50
+    const allowDiagonals = levelNumber >= 50; 
+    const allowReverse = levelNumber >= 50;   
 
     const words = getRandomWords(allWordsDictionary, wordCount, gridSize);
 

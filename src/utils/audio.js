@@ -1,6 +1,11 @@
 // audio.js - Web Audio API Beep utility
 
 let audioCtx = null;
+let soundEnabled = true;
+
+export const setSoundEnabled = (enabled) => {
+    soundEnabled = enabled;
+};
 
 const getCtx = () => {
     if (!audioCtx) {
@@ -13,6 +18,7 @@ const getCtx = () => {
 };
 
 export const playBeep = (freq = 600, duration = 150, type = 'sine', startTimeOffset = 0) => {
+    if (!soundEnabled) return;
     try {
         const ctx = getCtx();
         const startTime = ctx.currentTime + startTimeOffset;
