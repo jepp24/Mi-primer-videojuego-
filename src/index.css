@@ -1,15 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
 
 :root {
+  /* Default Theme: Midnight (Modo Gamer Dark) */
   --bg-gradient-start: #0f172a;
-  --bg-gradient-end: #1e1b4b;
-  --primary-color: #818cf8;
-  --accent-color: #c084fc;
+  --bg-gradient-end: #020617;
+  --primary-color: #6366f1;
+  --accent-color: #a855f7;
   --text-color: #f8fafc;
-  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.1);
   --cell-size: 35px;
+  --found-color: #22c55e;
 }
+
+[data-theme='emerald'] {
+  --bg-gradient-start: #064e3b;
+  --bg-gradient-end: #022c22;
+  --primary-color: #10b981;
+  --accent-color: #34d399;
+  --text-color: #ecfdf5;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --found-color: #fbbf24;
+}
+
+[data-theme='softrose'] {
+  --bg-gradient-start: #fdf2f8;
+  --bg-gradient-end: #fce7f3;
+  --primary-color: #ec4899;
+  --accent-color: #f472b6;
+  --text-color: #1e1b4b;
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(236, 72, 153, 0.2);
+  --found-color: #8b5cf6;
+}
+
+[data-theme='nitro'] {
+  --bg-gradient-start: #111111;
+  --bg-gradient-end: #000000;
+  --primary-color: #ef4444;
+  --accent-color: #b91c1c;
+  --text-color: #ffffff;
+  --glass-bg: rgba(239, 68, 68, 0.05);
+  --glass-border: rgba(239, 68, 68, 0.2);
+  --found-color: #f59e0b;
+}
+
+
 
 * {
   box-sizing: border-box;
@@ -180,13 +217,14 @@ h2 {
 }
 
 .word-chip.found {
-  background: rgba(52, 211, 153, 0.2);
-  border-color: #34d399;
-  color: #34d399;
+  background: var(--found-color);
+  opacity: 0.3;
+  border-color: var(--found-color);
+  color: white;
   text-decoration: line-through;
   transform: scale(0.95);
-  opacity: 0.8;
 }
+
 
 /* Grid */
 .grid-container {
@@ -233,10 +271,12 @@ h2 {
 }
 
 .cell.found {
-  background: rgba(52, 211, 153, 0.4);
-  border-color: #34d399;
+  background: var(--found-color);
+  opacity: 0.8;
+  border-color: var(--found-color);
   color: #fff;
 }
+
 
 /* Overlays (Win/Loss) */
 .overlay {
@@ -428,7 +468,33 @@ h2 {
   box-shadow: 0 0 15px rgba(129, 140, 248, 0.5);
 }
 
+.theme-chip {
+  flex: 1;
+  min-width: calc(50% - 4px);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.theme-chip.active {
+  background: var(--primary-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.3);
+}
+
 .btn-back {
+
   align-self: flex-start;
   background: transparent;
   border: none;

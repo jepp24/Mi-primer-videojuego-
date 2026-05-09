@@ -9,17 +9,33 @@ const allWordsDictionary = [
     // Animales
     "TIGRE", "LEON", "ELEFANTE", "JIRAFA", "CANGURO", "PINGUINO",
     "COCODRILO", "MURCIELAGO", "RINOCERONTE", "HIPOPOTAMO", "CHIMPANCE",
-    "SERPIENTE", "AGUILA", "TORTUGA", "DELFIN", "BALLENA",
-    // Otras tematicas (Espacio, Computacion, Generales)
-    "ASTRONAUTA", "PLANETA", "GALAXIA", "METEORITO",
-    "COMPUTADORA",    "INTERNET", "PROGRAMA", "TECLADO",
-    "PANTALLA", "SISTEMA", "SOFTWARE", "HARDWARE",
-    "GUITARRA", "PIANO", "BATERIA", "VIOLIN",
-    "ESCUELA", "UNIVERSIDAD", "BIBLIOTECA", "MUSEO",
-    "ESTRELLA", "COMETA", "ORBITA", "TELESCOPIO",
-    "ALGORITMO", "DATOS", "ARCHIVO", "CARPETA",
-    "CIUDAD", "MONTAÑA", "BOSQUE", "DESIERTO", "OCEANO"
+    "SERPIENTE", "AGUILA", "TORTUGA", "DELFIN", "BALLENA", "TIBURON",
+    "CEBRA", "PANDA", "LOBO", "ZORRO", "CABALLO", "PERRO", "GATO",
+    // Espacio
+    "ASTRONAUTA", "PLANETA", "GALAXIA", "METEORITO", "ESTRELLA", 
+    "COMETA", "ORBITA", "TELESCOPIO", "UNIVERSO", "NEBULOSA", 
+    "COSMOS", "GRAVEDAD", "COHETE", "SATELITE", "MARTE", "JUPITER",
+    // Tecnología
+    "COMPUTADORA", "INTERNET", "PROGRAMA", "TECLADO", "PANTALLA", 
+    "SISTEMA", "SOFTWARE", "HARDWARE", "ALGORITMO", "DATOS", 
+    "ARCHIVO", "CARPETA", "SERVIDOR", "CODIGO", "NUBE", "ROBOT",
+    // Música
+    "GUITARRA", "PIANO", "BATERIA", "VIOLIN", "ORQUESTA", "SONIDO",
+    "MELODIA", "RITMO", "FLAUTA", "TROMPETA", "CANTANTE", "CONCIERTO",
+    // Geografía
+    "CIUDAD", "MONTAÑA", "BOSQUE", "DESIERTO", "OCEANO", "RIVER",
+    "VALLE", "VOLCAN", "ISLA", "CONTINENTE", "SELVA", "PRADERA",
+    // Frutas y Comida
+    "MANZANA", "PLATANO", "NARANJA", "UVA", "FRESA", "PIÑA",
+    "LIMON", "SANDIA", "TOMATE", "PATATA", "ARROZ", "PASTA",
+    // Colores
+    "AMARILLO", "AZUL", "ROJO", "VERDE", "BLANCO", "NEGRO",
+    "MORADO", "NARANJA", "ROSADO", "GRIS", "CELESTE", "MARRON",
+    // Deportes
+    "FUTBOL", "BASKET", "TENIS", "NATACION", "BOXEO", "CICLISMO",
+    "CORRER", "SALTAR", "ESTADIO", "EQUIPO", "PELOTA", "ATLETA"
 ];
+
 
 function getRandomWords(dictionary, count, lengthMax = 20) {
     const validWords = dictionary.filter(w => w.length <= lengthMax);

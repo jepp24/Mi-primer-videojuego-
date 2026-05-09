@@ -24,21 +24,30 @@ export default function Timer({ initialSeconds, onTimeUp, isRunning, addSecondsE
 
     useEffect(() => {
         let interval = null;
-        if (isRunning && timeLeft > 0) {
+        if (isRunning) {
             interval = setInterval(() => {
                 setTimeLeft(prev => {
+                    if (prev <= 0) {
+                        clearInterval(interval);
+                        return 0;
+                    }
                     const newTime = prev - 1;
                     if (newTime <= 10 && newTime > 0) {
-                        playBeep(800, 100); // Beep at 800Hz for 100ms
+                        playBeep(800, 100);
                     }
                     return newTime;
                 });
             }, 1000);
-        } else if (timeLeft === 0 && isRunning) {
-            onTimeUp();
         }
         return () => clearInterval(interval);
-    }, [isRunning, timeLeft, onTimeUp]);
+    }, [isRunning]);
+
+    useEffect(() => {
+        if (timeLeft === 0 && isRunning) {
+            onTimeUp();
+        }
+    }, [timeLeft, isRunning, onTimeUp]);
+
 
     const formatTime = () => {
         const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');

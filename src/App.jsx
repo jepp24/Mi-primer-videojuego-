@@ -19,8 +19,19 @@ function App() {
     const [menuPage, setMenuPage] = useState(0); 
     const [isSoundEnabled, setIsSoundEnabled] = useState(true);
     const [showSettings, setShowSettings] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState('midnight'); // midnight, emerald, cyberpunk, sunset
 
     const TOTAL_LEVELS = 100;
+
+    const THEMES = [
+        { id: 'midnight', name: 'Oscuro Gamer', icon: '🌌' },
+        { id: 'emerald', name: 'Esmeralda', icon: '🌿' },
+        { id: 'softrose', name: 'Soft Rose', icon: '🌸' },
+        { id: 'nitro', name: 'Rojo Nitro', icon: '🏎️' }
+    ];
+
+
+
 
     // Load progress and settings from LocalStorage
     useEffect(() => {
@@ -37,7 +48,21 @@ function App() {
             setIsSoundEnabled(enabled);
             setSoundEnabled(enabled);
         }
+
+        const savedTheme = localStorage.getItem('sopa_de_letras_theme');
+        if (savedTheme) {
+            setCurrentTheme(savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
     }, []);
+
+    const changeTheme = (themeId) => {
+        setCurrentTheme(themeId);
+        document.documentElement.setAttribute('data-theme', themeId);
+        localStorage.setItem('sopa_de_letras_theme', themeId);
+        if (isSoundEnabled) playBeep(1000, 50);
+    };
+
 
     const toggleSound = () => {
         const newState = !isSoundEnabled;
@@ -78,16 +103,15 @@ function App() {
         setGameState('PLAYING');
     };
 
-    const exitApp = async () => {
+    const exitApp = () => {
         if (window.confirm('¿Deseas salir del juego?')) {
-            try {
-                await CapacitorApp.exitApp();
-            } catch (e) {
+            CapacitorApp.exitApp().catch(() => {
                 console.log('Exiting app (web fallback)...');
                 alert('En un dispositivo móvil, la aplicación se cerraría ahora.');
-            }
+            });
         }
     };
+
 
     const handleWordSelect = (selection) => {
         if (gameState !== 'PLAYING') return;
@@ -103,14 +127,18 @@ function App() {
         }
 
         if (found) {
-            setFoundWords([...foundWords, found]);
-            setFoundPositions([...foundPositions, ...selection]);
+            setFoundWords(prev => [...prev, found]);
+            setFoundPositions(prev => [...prev, ...selection]);
             setAddSecondsEvent(prev => prev + 1);
+
             playBeep(1200, 100); // 🪙 "Ding!" sound effect for word
             
+            // We use foundWords.length + 1 because the state update is async
             if (foundWords.length + 1 === config.wordsPlaced.length) {
                 // WON THIS LEVEL
-                playBeep(1500, 300); // 🎉 "Tada!" sound effect for level win
+                setTimeout(() => {
+                    playBeep(1500, 300); // 🎉 "Tada!" sound effect for level win
+                }, 200);
                 if (level === maxUnlockedLevel && level < TOTAL_LEVELS) {
                     updateMaxLevel(level + 1);
                 }
@@ -118,6 +146,7 @@ function App() {
             }
         }
     };
+
 
     const handleTimeUp = () => {
         if (gameState === 'PLAYING') {
@@ -236,9 +265,24 @@ function App() {
                                             {isSoundEnabled ? 'ENCENDIDO' : 'APAGADO'}
                                         </button>
                                     </div>
+                                    <div className="setting-item" style={{flexDirection: 'column', alignItems: 'flex-start', gap: '10px'}}>
+                                        <span>Tema de Interfaz</span>
+                                        <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap', width: '100%'}}>
+                                            {THEMES.map(t => (
+                                                <button 
+                                                    key={t.id}
+                                                    className={`theme-chip ${currentTheme === t.id ? 'active' : ''}`}
+                                                    onClick={() => changeTheme(t.id)}
+                                                >
+                                                    {t.icon} {t.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                     <div className="setting-item" style={{justifyContent: 'center', marginTop: '10px'}}>
                                         <a href="PRIVACY_POLICY.html" target="_blank" style={{color: 'var(--accent-color)', fontSize: '0.9rem'}}>Política de Privacidad</a>
                                     </div>
+
                                 </div>
                                 <button className="btn-primary" onClick={() => setShowSettings(false)}>ACEPTAR</button>
                             </div>
