@@ -1,24 +1,47 @@
 // gameLevels.js
 
 const allWordsDictionary = [
-    // Aerolineas
+    // Aerolíneas
     "AVIANCA", "LATAM", "IBERIA", "EMIRATES", "LUFTHANSA",
     "RYANAIR", "EASYJET", "QANTAS", "DELTA", "UNITED",
     "AMERICAN", "AIRFRANCE", "KLM", "QATAR", "COPA",
     "AEROMEXICO", "VOLARIS", "VIVA", "BRITISH", "JAPAN",
     // Animales
     "TIGRE", "LEON", "ELEFANTE", "JIRAFA", "CANGURO", "PINGUINO",
-    "COCODRILO", "MURCIELAGO", "RINOCERONTE", "HIPOPOTAMO", "CHIMPANCE",
-    "SERPIENTE", "AGUILA", "TORTUGA", "DELFIN", "BALLENA",
-    // Otras tematicas (Espacio, Computacion, Generales)
-    "ASTRONAUTA", "PLANETA", "GALAXIA", "METEORITO",
-    "COMPUTADORA",    "INTERNET", "PROGRAMA", "TECLADO",
+    "COCODRILO", "MURCIELAGO", "SERPIENTE", "AGUILA", "TORTUGA",
+    "DELFIN", "BALLENA", "TIBURON", "CEBRA", "PANDA",
+    "LOBO", "ZORRO", "CABALLO", "PERRO", "GATO", "CONEJO",
+    // Espacio
+    "ASTRONAUTA", "PLANETA", "GALAXIA", "METEORITO", "ESTRELLA",
+    "COMETA", "ORBITA", "TELESCOPIO", "UNIVERSO", "NEBULOSA",
+    "COSMOS", "GRAVEDAD", "COHETE", "SATELITE", "MARTE",
+    // Tecnología
+    "COMPUTADORA", "INTERNET", "PROGRAMA", "TECLADO",
     "PANTALLA", "SISTEMA", "SOFTWARE", "HARDWARE",
-    "GUITARRA", "PIANO", "BATERIA", "VIOLIN",
-    "ESCUELA", "UNIVERSIDAD", "BIBLIOTECA", "MUSEO",
-    "ESTRELLA", "COMETA", "ORBITA", "TELESCOPIO",
     "ALGORITMO", "DATOS", "ARCHIVO", "CARPETA",
-    "CIUDAD", "MONTAÑA", "BOSQUE", "DESIERTO", "OCEANO"
+    "SERVIDOR", "CODIGO", "NUBE", "ROBOT",
+    // Música
+    "GUITARRA", "PIANO", "BATERIA", "VIOLIN",
+    "ORQUESTA", "MELODIA", "RITMO", "FLAUTA",
+    "TROMPETA", "CANTANTE", "CONCIERTO", "SONIDO",
+    // Geografía y Naturaleza
+    "CIUDAD", "MONTANA", "BOSQUE", "DESIERTO", "OCEANO",
+    "VALLE", "VOLCAN", "ISLA", "CONTINENTE", "SELVA",
+    // Educación
+    "ESCUELA", "UNIVERSIDAD", "BIBLIOTECA", "MUSEO",
+    "CIENCIA", "HISTORIA", "LECTURA", "EXAMEN",
+    // Frutas y Comida
+    "MANZANA", "PLATANO", "NARANJA", "FRESA",
+    "LIMON", "SANDIA", "TOMATE", "ARROZ",
+    // Deportes
+    "FUTBOL", "BASKET", "TENIS", "NATACION",
+    "BOXEO", "CICLISMO", "ESTADIO", "ATLETA",
+    // Colores
+    "AMARILLO", "AZUL", "ROJO", "VERDE",
+    "BLANCO", "NEGRO", "MORADO", "CELESTE",
+    // Profesiones
+    "MEDICO", "PILOTO", "BOMBERO", "POLICIA",
+    "INGENIERO", "ABOGADO", "PROFESOR", "COCINERO"
 ];
 
 function getRandomWords(dictionary, count, lengthMax = 20) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { generateGrid } from './utils/wordSearchGenerator';
 import { getLevelConfig } from './utils/gameLevels';
 import { playBeep, playAlertSound, playAnguishSound, setSoundEnabled } from './utils/audio';
@@ -22,6 +22,18 @@ function App() {
     const [currentTheme, setCurrentTheme] = useState('midnight');
 
     const TOTAL_LEVELS = 100;
+
+    // Memoize particle positions so they don't jump on re-renders
+    const particleData = useMemo(() => {
+        const chars = ['S', 'O', 'P', 'A', 'D', 'E', 'L', 'E', 'T', 'R', 'A', 'S'];
+        return chars.map((char, i) => ({
+            char,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            delay: `${Math.random() * -20}s`,
+            size: `${1.2 + Math.random() * 1.5}rem`
+        }));
+    }, []);
 
     const THEMES = [
         { id: 'midnight', name: 'Oscuro Gamer', icon: '🌌' },
@@ -49,16 +61,12 @@ function App() {
 
         const savedTheme = localStorage.getItem('sopa_de_letras_theme');
         if (savedTheme) {
-            console.log(`[ThemeSystem] Cargando tema guardado: ${savedTheme}`);
             setCurrentTheme(savedTheme);
             document.documentElement.setAttribute('data-theme', savedTheme);
-        } else {
-            console.log('[ThemeSystem] No hay tema guardado, usando medianoche por defecto.');
         }
     }, []);
 
     const changeTheme = (themeId) => {
-        console.log(`[ThemeSystem] Cambiando a tema: ${themeId}`);
         setCurrentTheme(themeId);
         document.documentElement.setAttribute('data-theme', themeId);
         localStorage.setItem('sopa_de_letras_theme', themeId);
@@ -220,12 +228,9 @@ function App() {
                     </button>
                 </div>
                 <div className="levels-grid">{levels}</div>
-     // Initialize Lucide icons on every state change that might render new icons
-    useEffect(() => {
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-    }, [gameState, showSettings]);
+            </div>
+        );
+    };
 
 // Main App Grid
     return (
@@ -236,14 +241,14 @@ function App() {
                     <div className="bg-glow-top"></div>
                     <div className="bg-glow-bottom"></div>
                     <div className="particle-container">
-                        {['S', 'O', 'P', 'A', 'D', 'E', 'L', 'E', 'T', 'R', 'A', 'S'].map((char, i) => (
+                        {particleData.map((p, i) => (
                             <div key={i} className="particle" style={{
-                                top: `${Math.random() * 100}%`,
-                                left: `${Math.random() * 100}%`,
-                                animationDelay: `${Math.random() * -20}s`,
-                                fontSize: `${1.2 + Math.random() * 1.5}rem`
+                                top: p.top,
+                                left: p.left,
+                                animationDelay: p.delay,
+                                fontSize: p.size
                             }}>
-                                {char}
+                                {p.char}
                             </div>
                         ))}
                     </div>
@@ -269,13 +274,13 @@ function App() {
                     <div className="secondary-actions-premium">
                         <div className="action-item-premium">
                             <button className="btn-circle-premium" onClick={() => setShowSettings(true)}>
-                                <i data-lucide="settings"></i>
+                                ⚙️
                             </button>
                             <span className="action-label-premium">CONFIGURACIÓN</span>
                         </div>
                         <div className="action-item-premium">
                             <button className="btn-circle-premium" onClick={exitApp}>
-                                <i data-lucide="log-out"></i>
+                                🚪
                             </button>
                             <span className="action-label-premium">SALIR</span>
                         </div>
@@ -321,6 +326,7 @@ function App() {
                             </div>
                         </div>
                     )}
+                </div>
             )}
 
             {gameState === 'LEVEL_SELECT' && (

@@ -22,23 +22,31 @@ export default function Timer({ initialSeconds, onTimeUp, isRunning, addSecondsE
         }
     }, [addSecondsEvent, initialSeconds]);
 
+    // Single interval — only recreated when isRunning changes
     useEffect(() => {
-        let interval = null;
-        if (isRunning && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft(prev => {
-                    const newTime = prev - 1;
-                    if (newTime <= 10 && newTime > 0) {
-                        playBeep(800, 100); // Beep at 800Hz for 100ms
-                    }
-                    return newTime;
-                });
-            }, 1000);
-        } else if (timeLeft === 0 && isRunning) {
+        if (!isRunning) return;
+        const interval = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                const newTime = prev - 1;
+                if (newTime <= 10 && newTime > 0) {
+                    playBeep(800, 100);
+                }
+                return newTime;
+            });
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [isRunning]);
+
+    // Separate effect for time-up callback
+    useEffect(() => {
+        if (timeLeft === 0 && isRunning) {
             onTimeUp();
         }
-        return () => clearInterval(interval);
-    }, [isRunning, timeLeft, onTimeUp]);
+    }, [timeLeft, isRunning, onTimeUp]);
 
     const formatTime = () => {
         const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');

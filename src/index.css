@@ -11,6 +11,11 @@
   --glass-border: rgba(255, 255, 255, 0.1);
   --cell-size: 35px;
   --found-color: #22c55e;
+  /* Premium Design System */
+  --premium-gold: linear-gradient(180deg, #fffbeb 0%, #fde68a 40%, #fbbf24 60%, #b45309 100%);
+  --premium-blue: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 50%, #0ea5e9 100%);
+  --premium-glass: rgba(255, 255, 255, 0.05);
+  --premium-border: rgba(255, 255, 255, 0.15);
 }
 
 [data-theme='emerald'] {
@@ -385,12 +390,6 @@ h2 {
 
 /* --- PREMIUM DESIGN SYSTEM --- */
 
-:root {
-  --premium-gold: linear-gradient(180deg, #fffbeb 0%, #fde68a 40%, #fbbf24 60%, #b45309 100%);
-  --premium-blue: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 50%, #0ea5e9 100%);
-  --premium-glass: rgba(255, 255, 255, 0.05);
-  --premium-border: rgba(255, 255, 255, 0.15);
-}
 
 .home-container-premium {
   position: relative;
@@ -442,8 +441,8 @@ h2 {
   position: absolute;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.1);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
   animation: float-premium 25s infinite ease-in-out;
+  will-change: transform, opacity;
 }
 
 @keyframes float-premium {
@@ -509,12 +508,11 @@ h2 {
 .btn-play-premium {
   position: relative;
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 2px solid rgba(129, 140, 248, 0.4);
   border-radius: 60px;
   padding: 16px 50px;
   color: white;
+  font-family: 'Outfit', sans-serif;
   font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: 2px;
@@ -574,14 +572,13 @@ h2 {
   height: 65px;
   border-radius: 50%;
   background: var(--premium-glass);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--premium-border);
   color: #cbd5e1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
   transition: all 0.3s ease;
 }
 
@@ -665,7 +662,6 @@ h2 {
 }
 
 .btn-back {
-
   align-self: flex-start;
   background: transparent;
   border: none;
