@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# If you add more pages, make sure this points to the full sitemap URL
+Sitemap: https://jepp24.github.io/sopa_de_letras_modo_genio/sitemap.xml
