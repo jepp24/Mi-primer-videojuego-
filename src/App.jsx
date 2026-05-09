@@ -220,35 +220,70 @@ function App() {
                     </button>
                 </div>
                 <div className="levels-grid">{levels}</div>
-            </div>
-        );
-    };
+     // Initialize Lucide icons on every state change that might render new icons
+    useEffect(() => {
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }, [gameState, showSettings]);
 
 // Main App Grid
     return (
         <div className="app-container">
             {gameState === 'START_SCREEN' && (
-                <div className="start-screen">
-                    <div className="hero-section">
-                        <h1>Sopa de Letras:<br />Modo Genio</h1>
-                        <div className="badge-premium">PREMIUM EDITION</div>
+                <div className="home-container-premium">
+                    {/* Background Orbs and Particles */}
+                    <div className="bg-glow-top"></div>
+                    <div className="bg-glow-bottom"></div>
+                    <div className="particle-container">
+                        {['S', 'O', 'P', 'A', 'D', 'E', 'L', 'E', 'T', 'R', 'A', 'S'].map((char, i) => (
+                            <div key={i} className="particle" style={{
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * -20}s`,
+                                fontSize: `${1.2 + Math.random() * 1.5}rem`
+                            }}>
+                                {char}
+                            </div>
+                        ))}
                     </div>
+
+                    <header className="hero-section">
+                        <h1 className="main-title-premium">
+                            <span className="title-sopa-de">SOPA DE</span><br />
+                            <span className="title-letras">LETRAS</span>
+                        </h1>
+                        <div className="subtitle-container-premium">
+                            <div className="gold-line"></div>
+                            <span className="subtitle-text">MODO GENIO</span>
+                            <div className="gold-line"></div>
+                        </div>
+                    </header>
                     
-                    <div className="menu-buttons">
-                        <button className="btn-primary main-action" onClick={() => setGameState('LEVEL_SELECT')}>
-                            🎮 JUGAR
-                        </button>
-                        <button className="btn-secondary" onClick={() => setShowSettings(true)}>
-                            ⚙️ CONFIGURACIÓN
-                        </button>
-                        <button className="btn-icon" onClick={exitApp} style={{marginTop: '10px'}}>
-                            🚪 SALIR
+                    <div className="main-actions">
+                        <button className="btn-play-premium" onClick={() => setGameState('LEVEL_SELECT')}>
+                            <span className="play-icon">🎮</span> JUGAR
                         </button>
                     </div>
 
-                    <div className="footer-info">
-                        V 1.0.0 • by Emilio
+                    <div className="secondary-actions-premium">
+                        <div className="action-item-premium">
+                            <button className="btn-circle-premium" onClick={() => setShowSettings(true)}>
+                                <i data-lucide="settings"></i>
+                            </button>
+                            <span className="action-label-premium">CONFIGURACIÓN</span>
+                        </div>
+                        <div className="action-item-premium">
+                            <button className="btn-circle-premium" onClick={exitApp}>
+                                <i data-lucide="log-out"></i>
+                            </button>
+                            <span className="action-label-premium">SALIR</span>
+                        </div>
                     </div>
+
+                    <footer className="footer-premium">
+                        V 1.0.0 • by Emilio
+                    </footer>
 
                     {showSettings && (
                         <div className="overlay">
@@ -281,13 +316,11 @@ function App() {
                                     <div className="setting-item" style={{justifyContent: 'center', marginTop: '10px'}}>
                                         <a href="PRIVACY_POLICY.html" target="_blank" style={{color: 'var(--accent-color)', fontSize: '0.9rem'}}>Política de Privacidad</a>
                                     </div>
-
                                 </div>
                                 <button className="btn-primary" onClick={() => setShowSettings(false)}>ACEPTAR</button>
                             </div>
                         </div>
                     )}
-                </div>
             )}
 
             {gameState === 'LEVEL_SELECT' && (
