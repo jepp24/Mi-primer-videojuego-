@@ -19,8 +19,17 @@ function App() {
     const [menuPage, setMenuPage] = useState(0); 
     const [isSoundEnabled, setIsSoundEnabled] = useState(true);
     const [showSettings, setShowSettings] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState('midnight');
 
     const TOTAL_LEVELS = 100;
+
+    const THEMES = [
+        { id: 'midnight', name: 'Oscuro Gamer', icon: '🌌' },
+        { id: 'emerald', name: 'Esmeralda', icon: '🌿' },
+        { id: 'softrose', name: 'Soft Rose', icon: '🌸' },
+        { id: 'nitro', name: 'Rojo Nitro', icon: '🏎️' }
+    ];
+
 
     // Load progress and settings from LocalStorage
     useEffect(() => {
@@ -37,7 +46,26 @@ function App() {
             setIsSoundEnabled(enabled);
             setSoundEnabled(enabled);
         }
+
+        const savedTheme = localStorage.getItem('sopa_de_letras_theme');
+        if (savedTheme) {
+            console.log(`[ThemeSystem] Cargando tema guardado: ${savedTheme}`);
+            setCurrentTheme(savedTheme);
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else {
+            console.log('[ThemeSystem] No hay tema guardado, usando medianoche por defecto.');
+        }
     }, []);
+
+    const changeTheme = (themeId) => {
+        console.log(`[ThemeSystem] Cambiando a tema: ${themeId}`);
+        setCurrentTheme(themeId);
+        document.documentElement.setAttribute('data-theme', themeId);
+        localStorage.setItem('sopa_de_letras_theme', themeId);
+        if (isSoundEnabled) playBeep(1000, 50);
+    };
+
+
 
     const toggleSound = () => {
         const newState = !isSoundEnabled;
@@ -202,7 +230,7 @@ function App() {
             {gameState === 'START_SCREEN' && (
                 <div className="start-screen">
                     <div className="hero-section">
-                        <h1>Sopa de Letras</h1>
+                        <h1>Sopa de Letras:<br />Modo Genio</h1>
                         <div className="badge-premium">PREMIUM EDITION</div>
                     </div>
                     
@@ -236,9 +264,24 @@ function App() {
                                             {isSoundEnabled ? 'ENCENDIDO' : 'APAGADO'}
                                         </button>
                                     </div>
+                                    <div className="setting-item" style={{flexDirection: 'column', alignItems: 'flex-start', gap: '10px'}}>
+                                        <span>Tema de Interfaz</span>
+                                        <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap', width: '100%'}}>
+                                            {THEMES.map(t => (
+                                                <button 
+                                                    key={t.id}
+                                                    className={`theme-chip ${currentTheme === t.id ? 'active' : ''}`}
+                                                    onClick={() => changeTheme(t.id)}
+                                                >
+                                                    {t.icon} {t.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                     <div className="setting-item" style={{justifyContent: 'center', marginTop: '10px'}}>
                                         <a href="PRIVACY_POLICY.html" target="_blank" style={{color: 'var(--accent-color)', fontSize: '0.9rem'}}>Política de Privacidad</a>
                                     </div>
+
                                 </div>
                                 <button className="btn-primary" onClick={() => setShowSettings(false)}>ACEPTAR</button>
                             </div>
